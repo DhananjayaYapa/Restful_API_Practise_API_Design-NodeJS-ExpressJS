@@ -1,5 +1,9 @@
+import dotenv from 'dotenv'
 import { env as loadEnv } from 'custom-env'
 import { z } from 'zod'
+
+// Load .env first to get APP_STAGE
+dotenv.config()
 
 process.env.APP_STAGE = process.env.APP_STAGE || 'dev'
 
@@ -7,9 +11,12 @@ const isProduction = process.env.APP_STAGE === 'production'
 const isDevelopment = process.env.APP_STAGE === 'dev'
 const isTesting = process.env.APP_STAGE === 'test'
 
-if (isDevelopment) {
-  loadEnv()
-} else if (isTesting) {
+// if (isDevelopment) {
+//   loadEnv()
+// } else if (isTesting) {
+// For development, base .env is already loaded via dotenv
+// For test, load .env.test via custom-env
+if (isTesting) {
   loadEnv('test')
 }
 
@@ -21,7 +28,7 @@ const envSchema = z.object({
   APP_STAGE: z.enum(['dev', 'test', 'production']).default('dev'),
 
   PORT: z.coerce.number().positive().default(3000),
-  // DATABASE_URL: z.string().startsWith('postgresql://'),
+  DATABASE_URL: z.string().startsWith('postgresql://'),
   // JWT_SECRET: z.string().min(32, 'Must be 32 chars long'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   BCRYPT_ROUNDS: z.coerce.number().min(10).max(20).default(12),
