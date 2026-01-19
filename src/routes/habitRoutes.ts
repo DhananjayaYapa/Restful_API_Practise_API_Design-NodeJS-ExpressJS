@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { validateBody, validateParams } from '../middleware/validation.ts'
 import z from 'zod'
+import { authenticate } from '../middleware/auth.ts'
 
 const router = Router()
 const createHabitSchema = z.object({
@@ -10,6 +11,7 @@ const completedParamsSchema = z.object({
   id: z.string().max(3),
 })
 
+router.use(authenticate)
 router.get('/', (req, res) => {
   res.json({ message: 'Get all posts' })
 })
